@@ -55,10 +55,14 @@ export default class OAuthController {
 
     session.put('user_info', JSON.stringify(user))
 
+    response.safeHeader('Cache-control', 'no-cache, no-store, max-age=0, must-revalidate')
+
     return response.redirect().toRoute('oauth.user_info')
   }
 
   async user_info({ response, session, logger }: HttpContext) {
+    response.safeHeader('Cache-control', 'no-cache, no-store, max-age=0, must-revalidate')
+
     const userInfo = session.pull('user_info', false)
 
     if (!userInfo) {
@@ -68,6 +72,6 @@ export default class OAuthController {
 
     const parsedUserInfo = JSON.parse(userInfo)
 
-    return JSON.stringify(parsedUserInfo, null, 2)
+    return response.safeStatus(200).send(JSON.stringify(parsedUserInfo, null, 2))
   }
 }
