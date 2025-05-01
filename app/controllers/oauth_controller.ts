@@ -16,7 +16,7 @@ export default class OAuthController {
     return ally.use(params.provider).redirect()
   }
 
-  async callback({ response, params, ally, session }: HttpContext) {
+  async callback({ response, params, ally, session, logger }: HttpContext) {
     if (!OAUTH_PROVIDERS.includes(params.provider)) {
       return response.abort('Unsupported OAuth provider')
     }
@@ -50,6 +50,8 @@ export default class OAuthController {
      * Access user info
      */
     const user = await provider.user()
+
+    logger.info({ user }, 'OAuth User Info')
 
     session.regenerate()
     session.put('user_info', user)
