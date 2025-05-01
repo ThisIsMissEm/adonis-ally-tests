@@ -3,10 +3,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 const OAUTH_PROVIDERS = ['github']
 
 export default class OAuthController {
-  async start({ response, params, ally }: HttpContext) {
+  async start({ response, params, ally, logger }: HttpContext) {
     if (!OAUTH_PROVIDERS.includes(params.provider)) {
       return response.abort('Unsupported OAuth provider')
     }
+
+    logger.debug(
+      { scopes: ally.use(params.provider).config.scopes },
+      `OAuth Scopes for ${params.provider}`
+    )
 
     return ally.use(params.provider).redirect()
   }
