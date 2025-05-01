@@ -53,6 +53,8 @@ export default class OAuthController {
 
     logger.info({ user }, 'OAuth User Info')
 
+    logger.debug({ user_info: JSON.stringify(user) }, 'OAuth user_info value')
+
     session.put('user_info', JSON.stringify(user))
 
     response.safeHeader('Cache-control', 'no-cache, no-store, max-age=0, must-revalidate')
