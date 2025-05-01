@@ -53,20 +53,21 @@ export default class OAuthController {
 
     logger.info({ user }, 'OAuth User Info')
 
-    session.regenerate()
-    session.put('user_info', user)
+    session.put('user_info', JSON.stringify(user))
 
     return response.redirect().toRoute('oauth.user_info')
   }
 
   async user_info({ response, session, logger }: HttpContext) {
-    const userInfo = session.pull('user_info')
+    const userInfo = session.pull('user_info', false)
 
     if (!userInfo) {
       logger.info({ userInfo }, 'Missing user info')
       return response.redirect().toRoute('home')
     }
 
-    return JSON.stringify(userInfo, null, 2)
+    const parsedUserInfo = JSON.parse(userInfo)
+
+    return JSON.stringify(parsedUserInfo, null, 2)
   }
 }
