@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-const OAUTH_PROVIDERS = ['github']
+const OAUTH_PROVIDERS = ['github', 'google']
 
 export default class OAuthController {
   async start({ response, params, ally, logger }: HttpContext) {
