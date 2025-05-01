@@ -51,7 +51,14 @@ export default class OAuthController {
      */
     const userInfo = await provider.user()
 
-    logger.info({ userInfo }, 'OAuth User Info')
+    logger.info(
+      {
+        user: userInfo.original,
+        provider: params.provider,
+        scope: userInfo.token?.scope,
+      },
+      'OAuth User Info'
+    )
 
     session.put('user_info', {
       user: userInfo.original,
