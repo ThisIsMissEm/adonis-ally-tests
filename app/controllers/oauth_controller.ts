@@ -49,31 +49,40 @@ export default class OAuthController {
     /**
      * Access user info
      */
-    const user = await provider.user()
+    const userInfo = await provider.user()
 
-    logger.info({ user }, 'OAuth User Info')
+    logger.info({ userInfo }, 'OAuth User Info')
 
-    logger.debug({ user_info: JSON.stringify(user) }, 'OAuth user_info value')
-
-    session.put('user_info', JSON.stringify(user))
+    session.put('user_info', {
+      user: userInfo.original,
+      provider: params.provider,
+      scope: userInfo.token?.scope,
+    })
 
     response.safeHeader('Cache-control', 'no-cache, no-store, max-age=0, must-revalidate')
 
     return response.redirect().toRoute('oauth.user_info')
   }
 
-  async user_info({ response, session, logger }: HttpContext) {
+  async user_info({ response, session, ally, logger }: HttpContext) {
     response.safeHeader('Cache-control', 'no-cache, no-store, max-age=0, must-revalidate')
 
     const userInfo = session.pull('user_info', false)
 
+    logger.info({ userInfo }, 'User info')
     if (!userInfo) {
-      logger.info({ userInfo }, 'Missing user info')
       return response.redirect().toRoute('home')
     }
 
-    const parsedUserInfo = JSON.parse(userInfo)
-
-    return response.safeStatus(200).send(JSON.stringify(parsedUserInfo, null, 2))
+    return response.safeStatus(200).send(
+      JSON.stringify(
+        {
+          ...userInfo,
+          requestedScopes: userInfo.provider && ally.use(userInfo.provider).config.scopes,
+        },
+        null,
+        2
+      )
+    )
   }
 }
