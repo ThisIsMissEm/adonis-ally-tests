@@ -6,7 +6,7 @@ const allyConfig = defineConfig({
     clientId: env.get('GITHUB_CLIENT_ID'),
     clientSecret: env.get('GITHUB_CLIENT_SECRET'),
     callbackUrl: new URL('/github/callback', env.get('PUBLIC_URL')).href,
-    scopes: ['read:user', 'user:email'],
+    scopes: env.get('GITHUB_CLIENT_SCOPES', 'read:user user:email').split(' '),
   }),
 })
 
